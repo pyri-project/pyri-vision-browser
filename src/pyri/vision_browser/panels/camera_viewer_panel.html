@@ -1,0 +1,7 @@
+<div id="camera_viewer_panel" class="h-100 w-100">
+    <div id="camera_viewer_panel_toolbar">
+        <span v-if="!capturing_sequence"><b-button @click="save_to_globals">Save To Global</b-button><b-button @click="save_sequence_to_globals">Save Sequence To Global</b-button><b-form-checkbox v-model="save_system_state_checked" name="check-button" switch inline>Save System State</b-form-checkbox></span>
+        <span v-if="capturing_sequence">Capturing sequence {{ captured_sequence_global_name }} <b-button @click="sequence_capture_next">Capture Image</b-button><b-button @click="sequence_capture_done">Done</b-button><b-button @click="sequence_capture_cancel">Cancel</b-button>  Total images: {{ captured_sequence_count }}</span>
+    </div>
+    <image id="camera_viewer_img" style="object-fit: contain;" class="h-100 w-100"></image>
+</div>

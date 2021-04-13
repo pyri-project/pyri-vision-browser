@@ -1,0 +1,23 @@
+<div id="cameras_table" class="overflow-auto h-100 bg-white">
+    <b-button @click="refresh_cameras_table">Refresh Table</b-button>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Camera Device Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template v-for="c in cameras">
+                <tr>
+                    <td>{{ c.local_device_name }}</td>
+                    <td>
+                        <a class="open" title="Open Preview" @click="camera_open(c.local_device_name)"><i class="fas fa-2x fa-folder-open"></i></a>&nbsp;
+                        <a class="info" title="Camera Info" @click="camera_info(c.local_device_name)"><i class="fas fa-2x fa-info-circle"></i></a>&nbsp;
+                        <a class="settings" title="Camera Settings" @click="camera_settings(c.local_device_name)"><i class="fas fa-2x fa-cog"></i></a>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+</div>
