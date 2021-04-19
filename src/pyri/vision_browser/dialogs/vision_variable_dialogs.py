@@ -2,6 +2,7 @@ from typing import List, Dict, Callable, Any, Tuple
 from pyri.webui_browser.plugins.variable_dialog import PyriWebUIBrowserVariableDialogInfo, PyriWebUIBrowserVariableDialogPluginFactory, PyriWebUIBrowserVariableDialogBase
 from pyri.webui_browser import PyriWebUIBrowser
 from .new_calibrate_intrinsic_dialog import show_new_camera_calibration_intrinsic_dialog
+from .new_calibrate_extrinsic_dialog import show_new_camera_calibration_extrinsic_dialog
 
 _variable_dialog_infos = {
     ("com.robotraconteur.imaging.camerainfo.CameraCalibration",("camera_calibration_intrinsic")): \
@@ -35,6 +36,9 @@ class PyriVisionWebUIBrowserVariableDialogPluginFactory(PyriWebUIBrowserVariable
     def show_variable_new_dialog(self, new_name: str, variable_type: str, variable_tags: str, core: "PyriWebUIBrowser") -> None:
         if variable_type == "com.robotraconteur.imaging.camerainfo.CameraCalibration" and "camera_calibration_intrinsic" in variable_tags:
             show_new_camera_calibration_intrinsic_dialog(new_name, variable_type, variable_tags, core)
+            return
+        if variable_type == "com.robotraconteur.geometry.NamedPoseWithCovariance" and "camera_calibration_extrinsic" in variable_tags:
+            show_new_camera_calibration_extrinsic_dialog(new_name, variable_type, variable_tags, core)
             return
         assert False, "Invalid new variable dialog type requested"
 

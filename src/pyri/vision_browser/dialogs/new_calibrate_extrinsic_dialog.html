@@ -1,0 +1,56 @@
+<template>
+    <div>
+        <b-modal
+            id="new_vision_camera_calibrate_extrinsic"
+            title="Create New Extrinsic Camera Calibration"
+            @ok="handle_create"
+            @hidden="handle_hidden"
+            hide-header-close
+        >
+            <b-form-group
+            label="Camera"
+            label-for="camera-select"
+            >
+                <b-form-select
+                    id="camera-select"
+                    v-model="camera_selected"
+                    :options="camera_select_options"
+                >
+                </b-form-select>
+            </b-form-group>
+            <b-form-group
+            label="Camera Intrinsic Parameters"
+            label-for="camera-intrinsic-select"
+            >
+                <b-form-select
+                    id="camera-intrinsic-select"
+                    v-model="camera_intrinsic_selected"
+                    :options="camera_intrinsic_select_options"
+                >
+                </b-form-select>
+            </b-form-group>
+            <b-form-group
+            label="Origin Landmark Image"
+            label-for="image-select"
+            >
+                <b-form-select
+                    id="image-select"
+                    v-model="image_selected"
+                    :options="image_select_options"
+                >
+                </b-form-select>
+            </b-form-group>
+            <b-form-group
+            label="Calibration Target"
+            label-for="calibration-target-select"
+            >
+                <b-form-select
+                    id="calibration-target-select"
+                    v-model="calibration_target_selected"
+                    :options="calibration_target_select_options"
+                >
+                </b-form-select>
+            </b-form-group>
+        </b-modal>
+    </div>
+</template>

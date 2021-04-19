@@ -110,6 +110,7 @@ async def do_calibration(camera_local_device_name, image_sequence_global_name, c
 
     except:
         js.alert(f"Calibration failed:\n\n{traceback.format_exc()}")
+        return
 
     try:
         do_show_new_camera_calibration_intrinsic_dialog2(new_name, calib_res.calibration, calib_res.display_images, core)

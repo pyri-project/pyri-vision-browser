@@ -1,0 +1,26 @@
+<template>
+    <div>
+        <b-modal
+            id="new_vision_camera_calibrate_extrinsic2"
+            title="Camera Extrinsic Calibration Results"
+            hide-header-close
+            ok-only
+            ok-title="Close"
+            @hidden="handle_hidden"
+        >
+        <div class="border border-dark">
+<pre>
+rpy = ({{ r }}, {{ p }}, {{ y }})  (degrees)
+xyz = ({{ x }}, {{ y }}, {{ z }})  (meters)
+</pre>
+        </div>
+        <b-img
+            width="640"
+            height="360"
+            fluid
+            style="text-shadow: 1px 1px 2px #333;"
+            :src="disp_img"
+        ></b-img>
+        </b-modal>
+    </div>
+</template>
