@@ -3,6 +3,7 @@ from pyri.webui_browser.plugins.variable_dialog import PyriWebUIBrowserVariableD
 from pyri.webui_browser import PyriWebUIBrowser
 from .new_calibrate_intrinsic_dialog import show_new_camera_calibration_intrinsic_dialog
 from .new_calibrate_extrinsic_dialog import show_new_camera_calibration_extrinsic_dialog
+from .new_calibrate_robot_origin_dialog import show_new_robot_origin_calibration_dialog
 
 _variable_dialog_infos = {
     ("com.robotraconteur.imaging.camerainfo.CameraCalibration",("camera_calibration_intrinsic")): \
@@ -20,6 +21,15 @@ _variable_dialog_infos = {
             "com.robotraconteur.geometry.NamedPoseWithCovariance",
             ["camera_calibration_extrinsic"],
             "Camera Extrinsic Calibration Parameters"
+        ),
+
+    ("com.robotraconteur.geometry.NamedPoseWithCovariance",("robot_origin_pose_calibration")): \
+        PyriWebUIBrowserVariableDialogInfo(
+            "robot_origin_pose_calibration",
+            "Robot Origin Pose Calibration",
+            "com.robotraconteur.geometry.NamedPoseWithCovariance",
+            ["robot_origin_pose_calibration"],
+            "Robot Origin Pose Calibration"
         )
 }
 
@@ -39,6 +49,9 @@ class PyriVisionWebUIBrowserVariableDialogPluginFactory(PyriWebUIBrowserVariable
             return
         if variable_type == "com.robotraconteur.geometry.NamedPoseWithCovariance" and "camera_calibration_extrinsic" in variable_tags:
             show_new_camera_calibration_extrinsic_dialog(new_name, variable_type, variable_tags, core)
+            return
+        if variable_type == "com.robotraconteur.geometry.NamedPoseWithCovariance" and "robot_origin_pose_calibration" in variable_tags:
+            show_new_robot_origin_calibration_dialog(new_name, variable_type, variable_tags, core)
             return
         assert False, "Invalid new variable dialog type requested"
 

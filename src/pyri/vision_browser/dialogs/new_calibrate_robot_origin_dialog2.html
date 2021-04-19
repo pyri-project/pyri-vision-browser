@@ -1,0 +1,37 @@
+<template>
+    <div>
+        <b-modal
+            id="new_vision_camera_calibrate_robot_origin2"
+            title="Robot Origin Pose Calibration Results"
+            hide-header-close
+            ok-only
+            ok-title="Close"
+            @hidden="handle_hidden"
+        >
+        <div class="border border-dark">
+
+<pre>
+xyz = ({{ x }}, {{ y }}, {{ z }})  (meters)
+rpy = ({{ r_r }}, {{ r_p }}, {{ r_y }})  (degrees)
+</pre>
+
+        </div>
+        <b-carousel
+            controls
+            indicators
+            img-width="640"
+            img-height="360"
+            style="text-shadow: 1px 1px 2px #333;"
+            :interval=4000
+        >
+            <b-carousel-slide
+                v-for="d in display_images"
+                :key="d.id"
+                :caption="d.caption"
+                :img-src="d.img"
+            >
+            </b-carousel-slide>
+        </b-carousel>
+        </b-modal>
+    </div>
+</template>

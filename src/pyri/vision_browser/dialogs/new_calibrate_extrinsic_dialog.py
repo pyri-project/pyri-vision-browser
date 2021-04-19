@@ -152,9 +152,9 @@ def do_show_new_camera_calibration_extrinsic_dialog2(new_name: str, camera_pose,
         x = f"{xyz[0]:4e}"
         y = f"{xyz[1]:4e}"
         z = f"{xyz[2]:4e}"
-        r = f"{rpy[0]:4e}"
-        p = f"{rpy[1]:4e}"
-        y = f"{rpy[2]:4e}"
+        r_r = f"{rpy[0]:4e}"
+        r_p = f"{rpy[1]:4e}"
+        r_y = f"{rpy[2]:4e}"
 
         i=0
         
@@ -170,9 +170,9 @@ def do_show_new_camera_calibration_extrinsic_dialog2(new_name: str, camera_pose,
                 "x": x,
                 "y": y,
                 "z": z,
-                "r": r,
-                "p": p,
-                "y": y,
+                "r_r": r_r,
+                "r_p": r_p,
+                "r_y": r_y,
                 "disp_img": disp_img_src
             },
             "methods":
