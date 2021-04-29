@@ -1,0 +1,37 @@
+<template>
+    <div>
+        <b-modal
+            id="new_image_roi"
+            title="Create New Image ROI"
+            @ok="handle_create"
+            @hidden="handle_hidden"
+            hide-header-close
+            modal-class="modal-fullscreen2"
+        >
+        
+        
+        <b-form-group
+            label="Source Image"
+            label-for="image-select"
+            >
+            <b-form-select
+                id="image-select"
+                v-model="image_selected"
+                :options="image_select_options"
+                @change="image_select_changed"
+            >
+            </b-form-select>
+        </b-form-group>
+        <div class="flex-grow-1">
+        <img id="roi_select_image" style="height: calc(100vh - 18rem); width: auto; display: block; margin-left: auto; margin-right: auto">
+        </div>
+        
+        
+        <div style="position:absolute; bottom: 0; left: 50%; transform: translate(-50%, 0%);">
+        <b-button @click="image_reset">Reset</b-button>
+        <b-button @click="image_rot_m5">Rotate -5 deg</b-button>
+        <b-button @click="image_rot_p5">Rotate +5 deg</b-button>
+        </div>
+        </b-modal>
+    </div>
+</template>

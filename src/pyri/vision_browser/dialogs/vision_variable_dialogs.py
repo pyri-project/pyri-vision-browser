@@ -5,6 +5,7 @@ from .new_calibrate_intrinsic_dialog import show_new_camera_calibration_intrinsi
 from .new_calibrate_extrinsic_dialog import show_new_camera_calibration_extrinsic_dialog
 from .new_calibrate_robot_origin_dialog import show_new_robot_origin_calibration_dialog
 from .new_image_template_dialog import show_new_image_template_dialog
+from .new_image_roi_dialog import show_new_image_roi_dialog
 
 _variable_dialog_infos = {
     ("com.robotraconteur.imaging.camerainfo.CameraCalibration",("camera_calibration_intrinsic")): \
@@ -39,6 +40,14 @@ _variable_dialog_infos = {
             "com.robotraconteur.image.CompressedImage",
             ["image_template"],
             "Template image for matching"
+        ),
+    ("com.robotraconteur.geometry.BoundingBox2D",("image_roi")): \
+        PyriWebUIBrowserVariableDialogInfo(
+            "image_roi",
+            "Image ROI",
+            "com.robotraconteur.geometry.BoundingBox2D",
+            ["image_roi"],
+            "Image Region of Interest (ROI)"
         )
 }
 
@@ -64,6 +73,9 @@ class PyriVisionWebUIBrowserVariableDialogPluginFactory(PyriWebUIBrowserVariable
             return
         if variable_type == "com.robotraconteur.image.CompressedImage" and "image_template" in variable_tags:
             show_new_image_template_dialog(new_name, variable_type, variable_tags, core)
+            return
+        if variable_type == "com.robotraconteur.geometry.BoundingBox2D" and "image_roi" in variable_tags:
+            show_new_image_roi_dialog(new_name, variable_type, variable_tags, core)
             return
         assert False, "Invalid new variable dialog type requested"
 
