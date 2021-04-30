@@ -41,7 +41,7 @@ class NewImageRoiDialog:
             await var_storage.async_add_variable2("globals", self.new_name ,"com.robotraconteur.geometry.BoundingBox2D", \
                 RR.VarValue(b,"com.robotraconteur.geometry.BoundingBox2D"), ["image_roi"], {}, \
                 variable_persistence["const"], None, variable_protection_level["read_write"], \
-                [], "Image matching template", False, None)
+                [], "Image region of interest", False, None)
 
         except:
             js.alert(f"Save image roi failed:\n\n{traceback.format_exc()}")
