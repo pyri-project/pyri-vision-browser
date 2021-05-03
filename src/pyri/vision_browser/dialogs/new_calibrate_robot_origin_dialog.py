@@ -5,6 +5,7 @@ import traceback
 import numpy as np
 import base64
 from RobotRaconteurCompanion.Util.GeometryUtil import GeometryUtil
+from pyri.webui_browser import util
 
 class NewRobotOriginCalibrationDialog:
     def __init__(self, new_name, core, device_manager):
@@ -69,7 +70,6 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
         dialog = js.Vue.new(js.python_to_js({
             "el": "#new_calibrate_robot_origin_dialog_wrapper",
             "template": dialog_html,
-            "store": core.vuex_store,
             "data":
             {
                 "robot_selected": "",
@@ -102,15 +102,9 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
         dialog_obj.init_vue(dialog)
 
         robots = []
-        device_names = dialog["$store"].state.active_device_names
-        for d in device_names:
-            try:
-                implemented_types = dialog["$store"].state.device_infos[d].standard_info.implemented_types
-                if "com.robotraconteur.robotics.robot.Robot" in implemented_types:
-                    robots.append({"value": d, "text": d})
-            except:
-                traceback.print_exc()
-
+        robot_names = util.get_devices_with_type(core, "com.robotraconteur.robotics.robot.Robot")
+        robots = util.device_names_to_dropdown_options(robot_names)
+        
         dialog["$data"].robot_select_options = js.python_to_js(robots)
         if len(robots) > 0:
             dialog["$data"].robot_selected = robots[0]["value"]

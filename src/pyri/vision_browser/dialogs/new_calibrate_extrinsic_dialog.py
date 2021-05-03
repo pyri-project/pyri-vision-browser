@@ -5,6 +5,7 @@ import traceback
 import numpy as np
 import base64
 from RobotRaconteurCompanion.Util.GeometryUtil import GeometryUtil
+from pyri.webui_browser import util
 
 class NewCameraExtrinsicCalibrationDialog:
     def __init__(self, new_name, core, device_manager):
@@ -50,7 +51,6 @@ async def do_show_new_camera_calibration_extrinsic_dialog(new_name: str, variabl
         dialog = js.Vue.new(js.python_to_js({
             "el": "#new_calibrate_extrinsic_dialog_wrapper",
             "template": dialog_html,
-            "store": core.vuex_store,
             "data":
             {
                 "camera_selected": "",
@@ -72,14 +72,8 @@ async def do_show_new_camera_calibration_extrinsic_dialog(new_name: str, variabl
         dialog_obj.init_vue(dialog)
 
         cameras = []
-        device_names = dialog["$store"].state.active_device_names
-        for d in device_names:
-            try:
-                implemented_types = dialog["$store"].state.device_infos[d].standard_info.implemented_types
-                if "com.robotraconteur.imaging.Camera" in implemented_types:
-                    cameras.append({"value": d, "text": d})
-            except:
-                traceback.print_exc()
+        camera_names = util.get_devices_with_type(core, "com.robotraconteur.imaging.Camera")
+        cameras = util.device_names_to_dropdown_options(camera_names)
 
         dialog["$data"].camera_select_options = js.python_to_js(cameras)
         if len(cameras) > 0:

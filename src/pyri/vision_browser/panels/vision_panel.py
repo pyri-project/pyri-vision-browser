@@ -6,6 +6,7 @@ import js
 import traceback
 from RobotRaconteur.Client import *
 import base64
+from pyri.webui_browser import util
 
 class PyriCameraListPanel(PyriWebUIBrowserPanelBase):
 
@@ -28,17 +29,9 @@ class PyriCameraListPanel(PyriWebUIBrowserPanelBase):
 
     def refresh_cameras_table(self,*args):
         try:
-            cameras = []
-            device_names = self.vue["$store"].state.active_device_names
-            for d in device_names:
-                try:
-                    implemented_types = self.vue["$store"].state.device_infos[d].standard_info.implemented_types
-                    if "com.robotraconteur.imaging.Camera" in implemented_types:
-                        cameras.append({"local_device_name": d})
-                except:
-                    traceback.print_exc()
-
-            self.vue["$data"].cameras = js.python_to_js(cameras)
+            cameras = util.get_devices_with_type(self.core,"com.robotraconteur.imaging.Camera")
+                        
+            self.vue["$data"].cameras = js.python_to_js([{"local_device_name": d} for d in cameras])
         except:
             traceback.print_exc()
 
@@ -85,7 +78,6 @@ async def add_vision_panel(panel_type: str, core: PyriWebUIBrowser, parent_eleme
 
     cameras_panel = js.Vue.new(js.python_to_js({
         "el": "#cameras_table",
-        "store": core.vuex_store,
         "data":
         {
             "cameras": []
@@ -140,7 +132,6 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
 
         self.vue = cameras_panel = js.Vue.new(js.python_to_js({
             "el": viewer_panel_toolbar,
-            "store": core.vuex_store,
             "data":
             {
                 "capturing_sequence": False,
