@@ -78,9 +78,43 @@ async def add_vision_panel(panel_type: str, core: PyriWebUIBrowser, parent_eleme
 
     cameras_panel = js.Vue.new(js.python_to_js({
         "el": "#cameras_table",
+        "components": {
+            "BootstrapTable": js.window.BootstrapTable
+        },
         "data":
         {
-            "cameras": []
+            "cameras": [],
+            "cameras_columns": [
+                {
+                    "field": "local_device_name",
+                    "title": "Camera Device Name"
+                },
+                {
+                    "field": "actions",
+                    "title": "Actions",
+                    "formatter": lambda a,b,c,d: """
+                                                <a class="camera_list_open" title="Open Preview" @click="camera_open(c.local_device_name)"><i class="fas fa-2x fa-folder-open"></i></a>&nbsp;
+                                                <a class="camera_list_info" title="Camera Info" @click="camera_info(c.local_device_name)"><i class="fas fa-2x fa-info-circle"></i></a>&nbsp;
+                                                """
+                                                #<a class="camera_lest_settings" title="Camera Settings" @click="camera_settings(c.local_device_name)"><i class="fas fa-2x fa-cog"></i></a>
+                                                 ,
+                    "events": {
+                        "click .camera_list_open": lambda e, value, row, d: camera_list_panel_obj.camera_open(row["local_device_name"]),
+                        "click .camera_list_info": lambda e, value, row, d: camera_list_panel_obj.camera_info(row["local_device_name"])
+                    }
+                },                               
+            ],
+            "camera_list_options":
+                {
+                    "search": True,
+                    "showColumns": False,
+                    "showToggle": True,
+                    "search": True,
+                    "showSearchClearButton": True,
+                    "showRefresh": False,
+                    "cardView": True,
+                    "toolbar": "#camera_list_toolbar"
+                } 
         },
         "methods":
         {
@@ -130,7 +164,7 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
 
         self.viewer_connected = False
 
-        self.vue = cameras_panel = js.Vue.new(js.python_to_js({
+        self.vue = js.Vue.new(js.python_to_js({
             "el": viewer_panel_toolbar,
             "data":
             {
