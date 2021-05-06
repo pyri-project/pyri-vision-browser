@@ -1,4 +1,4 @@
-<div id="cameras_table" class="overflow-auto h-100 bg-white">
+<div id="cameras_table" class="overflow-auto h-100 bg-white pyri-table-panel">
     <div name="camera_list_toolbar"><b-button @click="refresh_cameras_table"><i class="fa fa-sync"></i> Refresh Table</b-button></div>
     <bootstrap-table id="cameras_list_table" ref="cameras_list" :columns="cameras_columns" :data="cameras" :options="camera_list_options"></bootstrap-table>
 </div>
