@@ -92,6 +92,7 @@ async def add_vision_panel(panel_type: str, core: PyriWebUIBrowser, parent_eleme
                 {
                     "field": "actions",
                     "title": "Actions",
+                    "searchable": False,
                     "formatter": lambda a,b,c,d: """
                                                 <a class="camera_list_open" title="Open Preview" @click="camera_open(c.local_device_name)"><i class="fas fa-2x fa-folder-open"></i></a>&nbsp;
                                                 <a class="camera_list_info" title="Camera Info" @click="camera_info(c.local_device_name)"><i class="fas fa-2x fa-info-circle"></i></a>&nbsp;
