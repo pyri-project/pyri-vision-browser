@@ -5,6 +5,7 @@ import traceback
 import numpy as np
 import base64
 from RobotRaconteurCompanion.Util.GeometryUtil import GeometryUtil
+from pyri.webui_browser.util import to_js2
 
 class NewImageTemplateDialog:
     def __init__(self, new_name, core, device_manager):
@@ -43,7 +44,7 @@ class NewImageTemplateDialog:
 
     def handle_create(self, *args):
         try:
-            cropped_canvas = self.cropper.getCroppedCanvas(js.python_to_js({"imageSmoothingEnabled":False}))
+            cropped_canvas = self.cropper.getCroppedCanvas(to_js2({"imageSmoothingEnabled":False}))
             img_b64 = cropped_canvas.toDataURL('image/png')
             img_b64 = img_b64.replace("data:image/png;base64,","")
             img_bytes = base64.b64decode(img_b64)
@@ -55,7 +56,7 @@ class NewImageTemplateDialog:
 
     def handle_hidden(self, *args):
         try:
-            l = self.vue["$el"]
+            l = getattr(self.vue,"$el")
             l.parentElement.removeChild(l)
         except:
             traceback.print_exc()
@@ -92,7 +93,7 @@ class NewImageTemplateDialog:
             if self.cropper is None:
                 img_el = js.document.getElementById("training_image")
                 img_el.src = img_src
-                self.cropper = js.Cropper.new(img_el, js.python_to_js({"viewMode":2}))
+                self.cropper = js.Cropper.new(img_el, to_js2({"viewMode":2}))
             else:
                 self.cropper.reset()
                 self.cropper.replace(img_src)
@@ -117,7 +118,7 @@ async def do_show_new_image_template_dialog(new_name: str, variable_type: str, v
         el.id = "new_image_template_dialog_wrapper"
         js.document.getElementById("wrapper").appendChild(el)
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_image_template_dialog_wrapper",
             "template": dialog_html,
             "data":
@@ -141,14 +142,14 @@ async def do_show_new_image_template_dialog(new_name: str, variable_type: str, v
         img_vars = []
         for v in img_var_names:
             img_vars.append({"value": v, "text": v})
-        dialog["$data"].image_select_options = js.python_to_js(img_vars)
+        getattr(dialog,"$data").image_select_options = to_js2(img_vars)
         if len(img_vars) > 0:
-            dialog["$data"].image_selected = img_vars[0]["value"]
+            getattr(dialog,"$data").image_selected = img_vars[0]["value"]
             core.create_task(dialog_obj.set_image(img_var_names[0]))
     except:
         js.alert(f"Image template creating failed:\n\n{traceback.format_exc()}")
 
-    dialog["$bvModal"].show("new_image_template")
+    getattr(dialog,"$bvModal").show("new_image_template")
 
 
 def show_new_image_template_dialog(new_name: str, variable_type: str, variable_tags: str, core: "PyriWebUIBrowser"):

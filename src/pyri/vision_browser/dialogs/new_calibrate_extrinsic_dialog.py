@@ -6,6 +6,7 @@ import numpy as np
 import base64
 from RobotRaconteurCompanion.Util.GeometryUtil import GeometryUtil
 from pyri.webui_browser import util
+from pyri.webui_browser.util import to_js2
 
 class NewCameraExtrinsicCalibrationDialog:
     def __init__(self, new_name, core, device_manager):
@@ -19,17 +20,17 @@ class NewCameraExtrinsicCalibrationDialog:
 
     def handle_create(self,*args):
         try:
-            camera_local_device_name = self.vue["$data"].camera_selected
-            intrins_global_name = self.vue["$data"].camera_intrinsic_selected
-            image_global_name = self.vue["$data"].image_selected
-            calib_target = self.vue["$data"].calibration_target_selected
+            camera_local_device_name = getattr(self.vue,"$data").camera_selected
+            intrins_global_name = getattr(self.vue,"$data").camera_intrinsic_selected
+            image_global_name = getattr(self.vue,"$data").image_selected
+            calib_target = getattr(self.vue,"$data").calibration_target_selected
             self.core.create_task(do_calibration(camera_local_device_name,intrins_global_name,image_global_name,calib_target,self.new_name,self.core))
         except:
             traceback.print_exc()
 
     def handle_hidden(self,*args):
         try:
-            l = self.vue["$el"]
+            l = getattr(self.vue,"$el")
             l.parentElement.removeChild(l)
         except:
             traceback.print_exc()
@@ -48,7 +49,7 @@ async def do_show_new_camera_calibration_extrinsic_dialog(new_name: str, variabl
         el.id = "new_calibrate_extrinsic_dialog_wrapper"
         js.document.getElementById("wrapper").appendChild(el)
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_calibrate_extrinsic_dialog_wrapper",
             "template": dialog_html,
             "data":
@@ -75,9 +76,9 @@ async def do_show_new_camera_calibration_extrinsic_dialog(new_name: str, variabl
         camera_names = util.get_devices_with_type(core, "com.robotraconteur.imaging.Camera")
         cameras = util.device_names_to_dropdown_options(camera_names)
 
-        dialog["$data"].camera_select_options = js.python_to_js(cameras)
+        getattr(dialog,"$data").camera_select_options = to_js2(cameras)
         if len(cameras) > 0:
-            dialog["$data"].camera_selected = cameras[0]["value"]
+            getattr(dialog,"$data").camera_selected = cameras[0]["value"]
 
         db = core.device_manager.get_device_subscription("variable_storage").GetDefaultClient()
         img_var_names = await db.async_filter_variables("globals","",["image"],None)
@@ -85,23 +86,23 @@ async def do_show_new_camera_calibration_extrinsic_dialog(new_name: str, variabl
         img_vars = []
         for v in img_var_names:
             img_vars.append({"value": v, "text": v})
-        dialog["$data"].image_select_options = js.python_to_js(img_vars)
+        getattr(dialog,"$data").image_select_options = to_js2(img_vars)
         if len(img_vars) > 0:
-            dialog["$data"].image_selected = img_vars[0]["value"]
+            getattr(dialog,"$data").image_selected = img_vars[0]["value"]
 
         intrins_var_names = await db.async_filter_variables("globals","",["camera_calibration_intrinsic"],None)
         intrins_vars = []
         for v in intrins_var_names:
             intrins_vars.append({"value": v, "text": v})
-        dialog["$data"].camera_intrinsic_select_options = js.python_to_js(intrins_vars)
+        getattr(dialog,"$data").camera_intrinsic_select_options = to_js2(intrins_vars)
         if len(intrins_vars) > 0:
-            dialog["$data"].camera_intrinsic_selected = intrins_vars[0]["value"]
+            getattr(dialog,"$data").camera_intrinsic_selected = intrins_vars[0]["value"]
 
         cal = [{"value": "chessboard", "text": "chessboard"}]
-        dialog["$data"].calibration_target_select_options = js.python_to_js(cal)
-        dialog["$data"].calibration_target_selected = "chessboard"
+        getattr(dialog,"$data").calibration_target_select_options = to_js2(cal)
+        getattr(dialog,"$data").calibration_target_selected = "chessboard"
 
-        dialog["$bvModal"].show("new_vision_camera_calibrate_extrinsic")
+        getattr(dialog,"$bvModal").show("new_vision_camera_calibrate_extrinsic")
     except:
         js.alert(f"Calibration failed:\n\n{traceback.format_exc()}")
 
@@ -156,7 +157,7 @@ def do_show_new_camera_calibration_extrinsic_dialog2(new_name: str, camera_pose,
         disp_img_src = "data:image/jpeg;base64," + d_encoded
         # TODO: check for png?
         
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_calibrate_extrinsic_dialog2_wrapper",
             "template": dialog2_html,
             "data":
@@ -176,7 +177,7 @@ def do_show_new_camera_calibration_extrinsic_dialog2(new_name: str, camera_pose,
 
         }))
 
-        dialog["$bvModal"].show("new_vision_camera_calibrate_extrinsic2")
+        getattr(dialog,"$bvModal").show("new_vision_camera_calibrate_extrinsic2")
         
     except:
         traceback.print_exc()

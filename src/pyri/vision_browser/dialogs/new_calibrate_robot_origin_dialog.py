@@ -6,6 +6,7 @@ import numpy as np
 import base64
 from RobotRaconteurCompanion.Util.GeometryUtil import GeometryUtil
 from pyri.webui_browser import util
+from pyri.webui_browser.util import to_js2
 
 class NewRobotOriginCalibrationDialog:
     def __init__(self, new_name, core, device_manager):
@@ -19,21 +20,21 @@ class NewRobotOriginCalibrationDialog:
 
     def handle_create(self,*args):
         try:
-            robot_local_device_name = self.vue["$data"].robot_selected
-            intrinsic_calib = self.vue["$data"].camera_intrinsic_selected
-            extrinsic_calib = self.vue["$data"].camera_extrinsic_selected
-            image_sequence_global_name = self.vue["$data"].image_sequence_selected
-            aruco_dict = self.vue["$data"].aruco_dict_selected
-            aruco_tag_id = int(self.vue["$data"].aruco_tag_id)
-            aruco_tag_size = float(self.vue["$data"].aruco_tag_size)
+            robot_local_device_name = getattr(self.vue,"$data").robot_selected
+            intrinsic_calib = getattr(self.vue,"$data").camera_intrinsic_selected
+            extrinsic_calib = getattr(self.vue,"$data").camera_extrinsic_selected
+            image_sequence_global_name = getattr(self.vue,"$data").image_sequence_selected
+            aruco_dict = getattr(self.vue,"$data").aruco_dict_selected
+            aruco_tag_id = int(getattr(self.vue,"$data").aruco_tag_id)
+            aruco_tag_size = float(getattr(self.vue,"$data").aruco_tag_size)
             xyz = np.zeros((3,),dtype=np.float64)
             rpy = np.zeros((3,),dtype=np.float64)
-            xyz[0] = float(self.vue["$data"].marker_pose_x)
-            xyz[1] = float(self.vue["$data"].marker_pose_y)
-            xyz[2] = float(self.vue["$data"].marker_pose_z)
-            rpy[0] = float(self.vue["$data"].marker_pose_r_r)
-            rpy[1] = float(self.vue["$data"].marker_pose_r_p)
-            rpy[2] = float(self.vue["$data"].marker_pose_r_y)
+            xyz[0] = float(getattr(self.vue,"$data").marker_pose_x)
+            xyz[1] = float(getattr(self.vue,"$data").marker_pose_y)
+            xyz[2] = float(getattr(self.vue,"$data").marker_pose_z)
+            rpy[0] = float(getattr(self.vue,"$data").marker_pose_r_r)
+            rpy[1] = float(getattr(self.vue,"$data").marker_pose_r_p)
+            rpy[2] = float(getattr(self.vue,"$data").marker_pose_r_y)
 
             rpy = np.deg2rad(rpy)
 
@@ -48,7 +49,7 @@ class NewRobotOriginCalibrationDialog:
 
     def handle_hidden(self,*args):
         try:
-            l = self.vue["$el"]
+            l = getattr(self.vue,"$el")
             l.parentElement.removeChild(l)
         except:
             traceback.print_exc()
@@ -67,7 +68,7 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
         el.id = "new_calibrate_robot_origin_dialog_wrapper"
         js.document.getElementById("wrapper").appendChild(el)
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_calibrate_robot_origin_dialog_wrapper",
             "template": dialog_html,
             "data":
@@ -105,9 +106,9 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
         robot_names = util.get_devices_with_type(core, "com.robotraconteur.robotics.robot.Robot")
         robots = util.device_names_to_dropdown_options(robot_names)
         
-        dialog["$data"].robot_select_options = js.python_to_js(robots)
+        getattr(dialog,"$data").robot_select_options = to_js2(robots)
         if len(robots) > 0:
-            dialog["$data"].robot_selected = robots[0]["value"]
+            getattr(dialog,"$data").robot_selected = robots[0]["value"]
 
         db = core.device_manager.get_device_subscription("variable_storage").GetDefaultClient()
 
@@ -115,17 +116,17 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
         intrins_vars = []
         for v in intrins_var_names:
             intrins_vars.append({"value": v, "text": v})
-        dialog["$data"].camera_intrinsic_select_options = js.python_to_js(intrins_vars)
+        getattr(dialog,"$data").camera_intrinsic_select_options = to_js2(intrins_vars)
         if len(intrins_vars) > 0:
-            dialog["$data"].camera_intrinsic_selected = intrins_vars[0]["value"]
+            getattr(dialog,"$data").camera_intrinsic_selected = intrins_vars[0]["value"]
 
         extrins_var_names = await db.async_filter_variables("globals","",["camera_calibration_extrinsic"],None)
         extrins_vars = []
         for v in extrins_var_names:
             extrins_vars.append({"value": v, "text": v})
-        dialog["$data"].camera_extrinsic_select_options = js.python_to_js(extrins_vars)
+        getattr(dialog,"$data").camera_extrinsic_select_options = to_js2(extrins_vars)
         if len(extrins_vars) > 0:
-            dialog["$data"].camera_extrinsic_selected = extrins_vars[0]["value"]
+            getattr(dialog,"$data").camera_extrinsic_selected = extrins_vars[0]["value"]
 
         
         seq_var_names = await db.async_filter_variables("globals","",["image_sequence"],None)
@@ -133,9 +134,9 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
         seq_vars = []
         for v in seq_var_names:
             seq_vars.append({"value": v, "text": v})
-        dialog["$data"].image_sequence_select_options = js.python_to_js(seq_vars)
+        getattr(dialog,"$data").image_sequence_select_options = to_js2(seq_vars)
         if len(seq_vars) > 0:
-            dialog["$data"].image_sequence_selected = seq_vars[0]["value"]
+            getattr(dialog,"$data").image_sequence_selected = seq_vars[0]["value"]
 
         aruco_dicts = ['DICT_4X4_100', 'DICT_4X4_1000', 'DICT_4X4_250', \
             'DICT_4X4_50', 'DICT_5X5_100', 'DICT_5X5_1000', 'DICT_5X5_250', \
@@ -147,10 +148,10 @@ async def do_show_new_robot_origin_calibration_dialog(new_name: str, variable_ty
 
         aruco_opts = [{"value": v,"text": v} for v in aruco_dicts]
 
-        dialog["$data"].aruco_dict_select_options = js.python_to_js(aruco_opts)
-        dialog["$data"].aruco_dict_selected = 'DICT_6X6_250'
+        getattr(dialog,"$data").aruco_dict_select_options = to_js2(aruco_opts)
+        getattr(dialog,"$data").aruco_dict_selected = 'DICT_6X6_250'
         
-        dialog["$bvModal"].show("new_vision_camera_calibrate_robot_origin")
+        getattr(dialog,"$bvModal").show("new_vision_camera_calibrate_robot_origin")
     except:
         js.alert(f"Calibration failed:\n\n{traceback.format_exc()}")
 
@@ -217,7 +218,7 @@ def do_show_new_robot_origin_calibration_dialog2(new_name: str, robot_pose, disp
             i+=1
             #TODO: check for png?
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_calibrate_robot_origin_dialog2_wrapper",
             "template": dialog2_html,
             "data":
@@ -237,7 +238,7 @@ def do_show_new_robot_origin_calibration_dialog2(new_name: str, robot_pose, disp
 
         }))
 
-        dialog["$bvModal"].show("new_vision_camera_calibrate_robot_origin2")
+        getattr(dialog,"$bvModal").show("new_vision_camera_calibrate_robot_origin2")
 
     except:
         traceback.print_exc()

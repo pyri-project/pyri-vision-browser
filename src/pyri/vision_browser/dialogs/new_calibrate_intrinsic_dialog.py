@@ -6,6 +6,7 @@ import numpy as np
 import base64
 
 from pyri.webui_browser import util
+from pyri.webui_browser.util import to_js2
 
 class NewCameraIntrinsicCalibrationDialog:
     def __init__(self, new_name, core, device_manager):
@@ -19,16 +20,16 @@ class NewCameraIntrinsicCalibrationDialog:
 
     def handle_create(self,*args):
         try:
-            camera_local_device_name = self.vue["$data"].camera_selected
-            image_sequence_global_name = self.vue["$data"].image_sequence_selected
-            calib_target = self.vue["$data"].calibration_target_selected
+            camera_local_device_name = getattr(self.vue,"$data").camera_selected
+            image_sequence_global_name = getattr(self.vue,"$data").image_sequence_selected
+            calib_target = getattr(self.vue,"$data").calibration_target_selected
             self.core.create_task(do_calibration(camera_local_device_name,image_sequence_global_name,calib_target,self.new_name,self.core))
         except:
             traceback.print_exc()
 
     def handle_hidden(self,*args):
         try:
-            l = self.vue["$el"]
+            l = getattr(self.vue,"$el")
             l.parentElement.removeChild(l)
         except:
             traceback.print_exc()
@@ -47,7 +48,7 @@ async def do_show_new_camera_calibration_intrinsic_dialog(new_name: str, variabl
         el.id = "new_calibrate_intrinsic_dialog_wrapper"
         js.document.getElementById("wrapper").appendChild(el)
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_calibrate_intrinsic_dialog_wrapper",
             "template": dialog_html,
             "data":
@@ -72,9 +73,9 @@ async def do_show_new_camera_calibration_intrinsic_dialog(new_name: str, variabl
         camera_names = util.get_devices_with_type(core, "com.robotraconteur.imaging.Camera")
         cameras = util.device_names_to_dropdown_options(camera_names)
 
-        dialog["$data"].camera_select_options = js.python_to_js(cameras)
+        getattr(dialog,"$data").camera_select_options = to_js2(cameras)
         if len(cameras) > 0:
-            dialog["$data"].camera_selected = cameras[0]["value"]
+            getattr(dialog,"$data").camera_selected = cameras[0]["value"]
 
         db = core.device_manager.get_device_subscription("variable_storage").GetDefaultClient()
         seq_var_names = await db.async_filter_variables("globals","",["image_sequence"],None)
@@ -82,15 +83,15 @@ async def do_show_new_camera_calibration_intrinsic_dialog(new_name: str, variabl
         seq_vars = []
         for v in seq_var_names:
             seq_vars.append({"value": v, "text": v})
-        dialog["$data"].image_sequence_select_options = js.python_to_js(seq_vars)
+        getattr(dialog,"$data").image_sequence_select_options = to_js2(seq_vars)
         if len(seq_vars) > 0:
-            dialog["$data"].image_sequence_selected = seq_vars[0]["value"]
+            getattr(dialog,"$data").image_sequence_selected = seq_vars[0]["value"]
 
         cal = [{"value": "chessboard", "text": "chessboard"}]
-        dialog["$data"].calibration_target_select_options = js.python_to_js(cal)
-        dialog["$data"].calibration_target_selected = "chessboard"
+        getattr(dialog,"$data").calibration_target_select_options = to_js2(cal)
+        getattr(dialog,"$data").calibration_target_selected = "chessboard"
 
-        dialog["$bvModal"].show("new_vision_camera_calibrate_intrinsic")
+        getattr(dialog,"$bvModal").show("new_vision_camera_calibrate_intrinsic")
     except:
         js.alert(f"Calibration failed:\n\n{traceback.format_exc()}")
 
@@ -149,7 +150,7 @@ def do_show_new_camera_calibration_intrinsic_dialog2(new_name: str, calibration_
             i+=1
             #TODO: check for png?
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_calibrate_intrinsic_dialog2_wrapper",
             "template": dialog2_html,
             "data":
@@ -169,7 +170,7 @@ def do_show_new_camera_calibration_intrinsic_dialog2(new_name: str, calibration_
 
         }))
 
-        dialog["$bvModal"].show("new_vision_camera_calibrate_intrinsic2")
+        getattr(dialog,"$bvModal").show("new_vision_camera_calibrate_intrinsic2")
 
     except:
         traceback.print_exc()

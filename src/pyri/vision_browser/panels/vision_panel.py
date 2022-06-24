@@ -7,6 +7,7 @@ import traceback
 from RobotRaconteur.Client import *
 import base64
 from pyri.webui_browser import util
+from pyri.webui_browser.util import to_js2
 
 class PyriCameraListPanel(PyriWebUIBrowserPanelBase):
 
@@ -31,7 +32,7 @@ class PyriCameraListPanel(PyriWebUIBrowserPanelBase):
         try:
             cameras = util.get_devices_with_type(self.core,"com.robotraconteur.imaging.Camera")
                         
-            self.vue["$data"].cameras = js.python_to_js([{"local_device_name": d} for d in cameras])
+            getattr(self.vue,"$data").cameras = to_js2([{"local_device_name": d} for d in cameras])
         except:
             traceback.print_exc()
 
@@ -72,11 +73,11 @@ async def add_vision_panel(panel_type: str, core: PyriWebUIBrowser, parent_eleme
 
     core.layout.register_component("camera_list",register_camera_list_panel)
 
-    core.layout.layout.root.getItemsById("vision")[0].addChild(js.python_to_js(camera_list_panel_config))
+    core.layout.layout.root.getItemsById("vision")[0].addChild(to_js2(camera_list_panel_config))
 
     camera_list_panel_obj = PyriCameraListPanel(core, core.device_manager)
 
-    cameras_panel = js.Vue.new(js.python_to_js({
+    cameras_panel = js.Vue.new(to_js2({
         "el": "#cameras_table",
         "components": {
             "BootstrapTable": js.window.BootstrapTable
@@ -100,8 +101,8 @@ async def add_vision_panel(panel_type: str, core: PyriWebUIBrowser, parent_eleme
                                                 #<a class="camera_lest_settings" title="Camera Settings" @click="camera_settings(c.local_device_name)"><i class="fas fa-2x fa-cog"></i></a>
                                                  ,
                     "events": {
-                        "click .camera_list_open": lambda e, value, row, d: camera_list_panel_obj.camera_open(row["local_device_name"]),
-                        "click .camera_list_info": lambda e, value, row, d: camera_list_panel_obj.camera_info(row["local_device_name"])
+                        "click .camera_list_open": lambda e, value, row, d: camera_list_panel_obj.camera_open(row.local_device_name),
+                        "click .camera_list_info": lambda e, value, row, d: camera_list_panel_obj.camera_info(row.local_device_name)
                     }
                 },                               
             ],
@@ -157,7 +158,7 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
             "isClosable": True
         }
        
-        core.layout.layout.root.getItemsById("vision")[0].addChild(js.python_to_js(camera_viewer_panel_config))
+        core.layout.layout.root.getItemsById("vision")[0].addChild(to_js2(camera_viewer_panel_config))
         viewer_panel_el = core.layout.layout.root.getItemsById(f"camera_viewer_{camera_local_name}")[0].element
         self.viewer_img = viewer_panel_el.find("#camera_viewer_img")[0]
         viewer_panel_toolbar = viewer_panel_el.find("#camera_viewer_panel_toolbar")[0]
@@ -165,7 +166,7 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
 
         self.viewer_connected = False
 
-        self.vue = js.Vue.new(js.python_to_js({
+        self.vue = js.Vue.new(to_js2({
             "el": viewer_panel_toolbar,
             "data":
             {
@@ -231,7 +232,7 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
         global_name = js.prompt("global name")
         if global_name is None or global_name == "":
             return
-        save_state = self.vue["$data"].save_system_state_checked
+        save_state = getattr(self.vue,"$data").save_system_state_checked
         self.core.create_task(self.do_save_to_globals(global_name, save_state))
 
     async def do_save_sequence_to_globals(self, global_name, save_state):
@@ -249,11 +250,11 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
         global_name = js.prompt("global name")
         if global_name is None or global_name == "":
             return
-        self.vue["$data"].capturing_sequence=True
-        self.vue["$data"].captured_sequence_count=0
-        self.vue["$data"].captured_sequence_global_name=global_name
+        getattr(self.vue,"$data").capturing_sequence=True
+        getattr(self.vue,"$data").captured_sequence_count=0
+        getattr(self.vue,"$data").captured_sequence_global_name=global_name
 
-        save_state = self.vue["$data"].save_system_state_checked
+        save_state = getattr(self.vue,"$data").save_system_state_checked
         self.core.create_task(self.do_save_sequence_to_globals(global_name, save_state))
 
     async def do_sequence_capture_next(self):
@@ -266,7 +267,7 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
             traceback.print_exc()
 
     def sequence_capture_next(self, *args):
-        self.vue["$data"].captured_sequence_count+=1
+        getattr(self.vue,"$data").captured_sequence_count+=1
         self.core.create_task(self.do_sequence_capture_next())
 
     async def do_sequence_capture_done(self):
@@ -279,9 +280,9 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
             traceback.print_exc()
 
     def sequence_capture_done(self, *args):
-        self.vue["$data"].capturing_sequence=False
-        self.vue["$data"].captured_sequence_count=0
-        self.vue["$data"].captured_sequence_global_name=""
+        getattr(self.vue,"$data").capturing_sequence=False
+        getattr(self.vue,"$data").captured_sequence_count=0
+        getattr(self.vue,"$data").captured_sequence_global_name=""
         self.core.create_task(self.do_sequence_capture_done())
 
     async def do_sequence_capture_cancel(self):
@@ -294,9 +295,9 @@ class PyriCameraViewerPanel(PyriWebUIBrowserPanelBase):
             traceback.print_exc()
 
     def sequence_capture_cancel(self, *args):
-        self.vue["$data"].capturing_sequence=False
-        self.vue["$data"].captured_sequence_count=0
-        self.vue["$data"].captured_sequence_global_name=""
+        getattr(self.vue,"$data").capturing_sequence=False
+        getattr(self.vue,"$data").captured_sequence_count=0
+        getattr(self.vue,"$data").captured_sequence_global_name=""
         self.core.create_task(self.do_sequence_capture_abort())
 
 

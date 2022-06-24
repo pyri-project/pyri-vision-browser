@@ -5,6 +5,7 @@ import traceback
 import numpy as np
 import base64
 from RobotRaconteurCompanion.Util.GeometryUtil import GeometryUtil
+from pyri.webui_browser.util import to_js2
 
 class NewImageRoiDialog:
     def __init__(self, new_name, core, device_manager):
@@ -51,16 +52,16 @@ class NewImageRoiDialog:
         try:
             crop_data = self.cropper.getData()
             
-            cropper_x = float(crop_data["x"])
-            cropper_y = float(crop_data["y"])
-            cropper_w = float(crop_data["width"])
-            cropper_h = float(crop_data["height"])
-            cropper_r = np.deg2rad(float(crop_data["rotate"]))
+            cropper_x = float(crop_data.x)
+            cropper_y = float(crop_data.y)
+            cropper_w = float(crop_data.width)
+            cropper_h = float(crop_data.height)
+            cropper_r = np.deg2rad(float(crop_data.rotate))
             
             img_data = self.cropper.getImageData()
             
-            cropper_img_w = float(img_data["naturalWidth"])
-            cropper_img_h = float(img_data["naturalHeight"])
+            cropper_img_w = float(img_data.naturalWidth)
+            cropper_img_h = float(img_data.naturalHeight)
 
             c = np.cos(cropper_r)
             s = np.sin(cropper_r)
@@ -93,7 +94,7 @@ class NewImageRoiDialog:
 
     def handle_hidden(self, *args):
         try:
-            l = self.vue["$el"]
+            l = getattr(self.vue,"$el")
             l.parentElement.removeChild(l)
         except:
             traceback.print_exc()
@@ -131,7 +132,7 @@ class NewImageRoiDialog:
             if self.cropper is None:
                 img_el = js.document.getElementById("roi_select_image")
                 img_el.src = img_src
-                self.cropper = js.Cropper.new(img_el, js.python_to_js({"viewMode":2}))
+                self.cropper = js.Cropper.new(img_el, to_js2({"viewMode":2}))
             else:
                 self.cropper.reset()
                 self.cropper.replace(img_src)
@@ -153,10 +154,10 @@ async def do_show_new_image_roi_dialog(new_name: str, variable_type: str, variab
         dialog_obj = NewImageRoiDialog(new_name, core, core.device_manager)
 
         el = js.document.createElement('div')
-        el["id"] = "new_image_roi_dialog_wrapper"
+        setattr(el,"id","new_image_roi_dialog_wrapper")
         js.document.getElementById("wrapper").appendChild(el)
 
-        dialog = js.Vue.new(js.python_to_js({
+        dialog = js.Vue.new(to_js2({
             "el": "#new_image_roi_dialog_wrapper",
             "template": dialog_html,
             "data":
@@ -180,14 +181,14 @@ async def do_show_new_image_roi_dialog(new_name: str, variable_type: str, variab
         img_vars = []
         for v in img_var_names:
             img_vars.append({"value": v, "text": v})
-        dialog["$data"].image_select_options = js.python_to_js(img_vars)
+        getattr(dialog,"$data").image_select_options = to_js2(img_vars)
         if len(img_vars) > 0:
-            dialog["$data"].image_selected = img_vars[0]["value"]
+            getattr(dialog,"$data").image_selected = img_vars[0]["value"]
             core.create_task(dialog_obj.set_image(img_var_names[0]))
     except:
         js.alert(f"Image roi creating failed:\n\n{traceback.format_exc()}")
     
-    dialog["$bvModal"].show("new_image_roi")
+    getattr(dialog,"$bvModal").show("new_image_roi")
 
 
 def show_new_image_roi_dialog(new_name: str, variable_type: str, variable_tags: str, core: "PyriWebUIBrowser"):
