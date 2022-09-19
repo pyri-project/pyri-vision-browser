@@ -1,14 +1,26 @@
-from typing import List, Dict, Callable, Any
-from pyri.webui_browser.plugins.panel import PyriWebUIBrowserPanelInfo, PyriWebUIBrowserPanelPluginFactory, PyriWebUIBrowserPanelBase
+from typing import List, Dict, Callable, Any, Tuple
+from pyri.webui_browser.plugins.panel import PyriWebUIBrowserPanelInfo, PyriWebUIBrowserPanelPluginFactory
 from pyri.webui_browser import PyriWebUIBrowser
-from .vision_panel import add_vision_panel
+from pyri.webui_browser.golden_layout import PyriGoldenLayoutPanelConfig
 
 _panel_infos = {
         
-    "vision": PyriWebUIBrowserPanelInfo(
-        title="Vision",
-        panel_type="vision",
-        priority=5000
+    "camera_list": PyriWebUIBrowserPanelInfo(
+        title="Cameras",
+        description="List of available cameras",
+        panel_type="camera_list",
+        panel_category="vision",
+        component_type="pyri-camera-list",
+        priority=10000
+    )
+}
+
+_panel_default_configs = {
+    "camera_list": PyriGoldenLayoutPanelConfig(
+        component_type=_panel_infos["camera_list"].component_type,
+        panel_id = "camera_list",
+        panel_title = "Cameras",
+        closeable= False
     )
 }
 
@@ -22,10 +34,13 @@ class PyriVisionPanelsWebUIBrowserPanelPluginFactory(PyriWebUIBrowserPanelPlugin
     def get_panels_infos(self) -> Dict[str,PyriWebUIBrowserPanelInfo]:
         return _panel_infos
 
-    async def add_panel(self, panel_type: str, core: PyriWebUIBrowser, parent_element: Any) -> PyriWebUIBrowserPanelBase:
-        if panel_type == "vision":
-            return await add_vision_panel(panel_type, core, parent_element)
-        assert False, f"Unknown panel_type \"{panel_type}\" specified"
+    def get_default_panels(self, layout_config: str = "default") -> List[Tuple[PyriWebUIBrowserPanelInfo, "PyriGoldenLayoutPanelConfig"]]:
+        if layout_config.lower() == "default":
+            return [
+                (_panel_infos["camera_list"], _panel_default_configs["camera_list"])
+            ]
+        else:
+            return []
 
 def get_webui_browser_panel_factory():
     return PyriVisionPanelsWebUIBrowserPanelPluginFactory()
