@@ -7,6 +7,7 @@ from pyri.webui_browser import util
 from pyri.webui_browser.util import to_js2
 from pyri.webui_browser.pyri_vue import PyriVue, VueComponent, vue_register_component, vue_data, \
     vue_method, vue_prop, vue_computed, vue_watch
+import asyncio
 
 import base64
 
@@ -72,7 +73,7 @@ class PyriCameraViewerComponent(PyriVue):
 
                 img = None
                 
-                await RRN.AsyncSleep(0.001,None)
+                await asyncio.sleep(0.001)
         except:
             traceback.print_exc()
     
